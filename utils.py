@@ -17,15 +17,15 @@ def create_label(images_path,df,train=True):
 
     for img in glob.glob(images_path+'/*.jpg'):
         im = img.split('/')[-1].split('.')[0]
-            if im in Counter(df.img_IDs.to_list()):
-                if train:
-                    label = df[df.img_IDs == im].target.values[0]
-                    if label==1:
-                        shutil.copy2(images_path+im+'.jpg','train/1')
-                    else:
-                        shutil.copy2(images_path+im+'.jpg','train/0')
+        if im in Counter(df.img_IDs.to_list()):
+            if train:
+                label = df[df.img_IDs == im].target.values[0]
+                if label==1:
+                    shutil.copy2(images_path+im+'.jpg','train/1')
                 else:
-                    shutil.copy2(images_path+im+'.jpg','./test')
+                    shutil.copy2(images_path+im+'.jpg','train/0')
+            else:
+                shutil.copy2(images_path+im+'.jpg','./test')
 
 
                    
