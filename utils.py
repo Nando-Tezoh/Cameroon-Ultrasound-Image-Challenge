@@ -7,6 +7,8 @@ import time
 import torch.nn.functional as F
 import torch.nn as nn
 import numpy as np
+from sklearn import metrics
+
 
 
 
@@ -36,7 +38,7 @@ def create_label(images_path,df,train=True):
 
                    
                     
-def train_model(model, criterion, optimizer, scheduler, num_epochs=2):
+def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,num_epochs=20):
     since = time.time()
     auc_list = []
     best_model_wts = copy.deepcopy(model.state_dict())
