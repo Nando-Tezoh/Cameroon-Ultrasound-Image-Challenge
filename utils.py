@@ -77,8 +77,8 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=2):
                         optimizer.step()
                 
 
-                fpr, tpr, _= metrics.roc_curve(labels.data.cpu().detach().numpy()\                   
-                 ,max_prob.cpu().detach().numpy(), pos_label=None)
+                fpr, tpr, _= metrics.roc_curve(labels.data.cpu().detach().numpy(),                  
+                                                 max_prob.cpu().detach().numpy(), pos_label=None)
                 #print('vvv',Counter(labels.data.cpu().detach().numpy()))
                 #print(labels.data.cpu().detach().numpy())
                 #print(metrics.auc(fpr, tpr))
