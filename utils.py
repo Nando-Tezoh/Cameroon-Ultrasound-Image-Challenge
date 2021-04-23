@@ -4,6 +4,10 @@ from collections import Counter
 import copy
 import torch
 import time
+import torch.nn.functional as F
+import torch.nn as nn
+import numpy as np
+
 
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -123,7 +127,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=2):
 ### focal loss
 ##https://github.com/ashawkey/FocalLoss.pytorch
 ##https://github.com/gokulprasadthekkel/pytorch-multi-class-focal-loss/blob/master/focal_loss.py
-class FocalLoss(nn.Module):
+class FocalLoss(torch.nn.Module):
     '''Multi-class Focal loss implementation'''
     def __init__(self, gamma=2, weight=None):
         super(FocalLoss, self).__init__()
