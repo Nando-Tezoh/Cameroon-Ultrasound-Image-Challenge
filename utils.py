@@ -32,11 +32,12 @@ def create_label(images_path,df,train=True):
 
                    
                     
-def train_model(model, criterion, optimizer, scheduler,dataloaders,dataset_sizes,num_epochs=2):
+def train_model(model, criterion, optimizer, scheduler, num_epochs=2):
     since = time.time()
-
+    auc_list = []
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
+    best_auc = 0.0
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -52,37 +53,53 @@ def train_model(model, criterion, optimizer, scheduler,dataloaders,dataset_sizes
 
             running_loss = 0.0
             running_corrects = 0
+            auc = 0
+            bs = 0
 
             # Iterate over data.
             for inputs, labels in dataloaders[phase]:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
 
-                # zero the parameter gradients
                 optimizer.zero_grad()
 
                 with torch.set_grad_enabled(phase == 'train'):
                     outputs = model(inputs)
-                    _, preds = torch.max(outputs, 1)
+                    outputs1 = F.softmax(outputs,dim=1)
+                    max_prob, preds = torch.max(outputs1, dim=1)
+
+                    prods, preds = torch.max(outputs, 1)
+                    #print('prodd', max_prob.cpu().detach().numpy(),labels.data.cpu().detach().numpy())
                     loss = criterion(outputs, labels)
 
-                    # backward + optimize only if in training phase
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
+                
+
+                fpr, tpr, _= metrics.roc_curve(labels.data.cpu().detach().numpy()\                   
+                 ,max_prob.cpu().detach().numpy(), pos_label=None)
+                #print('vvv',Counter(labels.data.cpu().detach().numpy()))
+                #print(labels.data.cpu().detach().numpy())
+                #print(metrics.auc(fpr, tpr))
+                auc += metrics.auc(fpr, tpr)
+                bs+=1
+                #print('auc', auc)
 
                 # statistics
                 running_loss += loss.item() * inputs.size(0)
 
                 running_corrects += torch.sum(preds == labels.data)
+                # auc_list.append(auc)
             if phase == 'train':
                 scheduler.step()
 
             epoch_loss = running_loss / dataset_sizes[phase]
             epoch_acc = running_corrects.double() / dataset_sizes[phase]
+            epoch_auc = auc/bs
 
-            print('{} Loss: {:.4f} Acc: {:.4f}'.format(
-                phase, epoch_loss, epoch_acc))
+            print('{} Loss: {:.4f} Acc: {:.4f} Auc: {:.4f}'.format(
+                phase, epoch_loss, epoch_acc, epoch_auc))
 
             # deep copy the model
             if phase == 'val' and epoch_acc > best_acc:
@@ -91,7 +108,7 @@ def train_model(model, criterion, optimizer, scheduler,dataloaders,dataset_sizes
                 torch.save(model.state_dict(), 'model.best')
 
 
-        print()
+        #print()
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
@@ -99,12 +116,30 @@ def train_model(model, criterion, optimizer, scheduler,dataloaders,dataset_sizes
     print('Best val Acc: {:4f}'.format(best_acc))
 
     # load best model weights
-    model.load_state_dict(best_model_wts)
-    #model.load_state_dict(torch.load('model.best'))
-    return model
+    #model.load_state_dict(best_model_wts)
+    model.load_state_dict(torch.load('model.best'))
+    return model#, auc_list
 
+### focal loss
+##https://github.com/ashawkey/FocalLoss.pytorch
+##https://github.com/gokulprasadthekkel/pytorch-multi-class-focal-loss/blob/master/focal_loss.py
+class FocalLoss(nn.Module):
+    '''Multi-class Focal loss implementation'''
+    def __init__(self, gamma=2, weight=None):
+        super(FocalLoss, self).__init__()
+        self.gamma = gamma
+        self.weight = weight
 
-                    
+    def forward(self, input, target):
+        """
+        input: [N, C]
+        target: [N, ]
+        """
+        logpt = F.log_softmax(input, dim=1)
+        pt = torch.exp(logpt)
+        logpt = (1-pt)**self.gamma * logpt
+        loss = F.nll_loss(logpt, target, self.weight)
+        return loss  
                     
 
                     
