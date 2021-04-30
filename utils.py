@@ -38,7 +38,7 @@ def create_label(images_path,df,train=True):
 
                    
                     
-def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,num_epochs=20,auc=False):
+def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,auc,num_epochs=20):
     since = time.time()
     auc_list = []
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -108,7 +108,7 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,nu
                 phase, epoch_loss, epoch_acc, epoch_auc))
 
             # deep copy the model
-            if auc==False:
+            if not auc:
                 if phase == 'val' and epoch_acc > best_acc:
                     best_acc = epoch_acc
                     best_model_wts = copy.deepcopy(model.state_dict())
@@ -126,7 +126,7 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,nu
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
-    if auc==False:
+    if not auc:
         print('Best val Acc: {:4f}'.format(best_acc))
     else:
         print('Best val AUC : {:4f}'.format(best_auc))
