@@ -38,7 +38,7 @@ def create_label(images_path,df,train=True):
 
                    
                     
-def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,auc,num_epochs=20):
+def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,auc_bol,num_epochs=20):
     since = time.time()
     auc_list = []
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -108,14 +108,12 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
                 phase, epoch_loss, epoch_acc, epoch_auc))
 
             # deep copy the model
-            if not auc:
-                print('notauuuuc')
+            if not auc_bol:
                 if phase == 'val' and epoch_acc > best_acc:
                     best_acc = epoch_acc
                     best_model_wts = copy.deepcopy(model.state_dict())
                     torch.save(model.state_dict(), 'model.best')
             else:
-                print('auuuuuc')
                 
                 if phase== 'val' and epoch_auc> best_auc:
                     best_auc = epoch_auc
@@ -131,11 +129,9 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
     
     print()
     
-    if not auc:
-        print('notaucc')
+    if not auc_bol:
         print('Best val Acc: {:4f}'.format(best_acc))
     else:
-        print('auc')
         print('Best val AUC : {:4f}'.format(best_auc))
 
     # load best model weights
