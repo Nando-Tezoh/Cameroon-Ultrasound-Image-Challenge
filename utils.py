@@ -109,11 +109,13 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
 
             # deep copy the model
             if not auc:
+                print('notauuuuc')
                 if phase == 'val' and epoch_acc > best_acc:
                     best_acc = epoch_acc
                     best_model_wts = copy.deepcopy(model.state_dict())
                     torch.save(model.state_dict(), 'model.best')
             else:
+                print('auuuuuc')
                 
                 if phase== 'val' and epoch_auc> best_auc:
                     best_auc = epoch_auc
@@ -126,9 +128,14 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
+    
+    print()
+    
     if not auc:
+        print('notaucc')
         print('Best val Acc: {:4f}'.format(best_acc))
     else:
+        print('auc')
         print('Best val AUC : {:4f}'.format(best_auc))
 
     # load best model weights
