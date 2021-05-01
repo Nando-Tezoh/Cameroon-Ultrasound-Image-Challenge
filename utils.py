@@ -118,7 +118,7 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
                 if phase== 'val' and epoch_auc> best_auc:
                     best_auc = epoch_auc
                     best_model_wts = copy.deepcopy(model.state_dict())
-                    torch.save(model.state_dict(),'model.best')
+                    #torch.save(model.state_dict(),'model.best')
 
 
         #print()
@@ -135,8 +135,8 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
         print('Best val AUC : {:4f}'.format(best_auc))
 
     # load best model weights
-    #model.load_state_dict(best_model_wts)
-    model.load_state_dict(torch.load('model.best'))
+    model.load_state_dict(best_model_wts)
+    #model.load_state_dict(torch.load('model.best'))
     return model#, auc_list
 
 ### focal loss
