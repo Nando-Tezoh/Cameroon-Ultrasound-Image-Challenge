@@ -38,12 +38,13 @@ def create_label(images_path,df,train=True):
 
                    
                     
-def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,auc_bol,num_epochs=20):
+def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,auc_bol,reg=False,num_epochs=20):
     since = time.time()
     auc_list = []
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
     best_auc = 0.0
+    lambd = 0.1
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -76,7 +77,16 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
 
                     prods, preds = torch.max(outputs, 1)
                     #print('prodd', max_prob.cpu().detach().numpy(),labels.data.cpu().detach().numpy())
-                    loss = criterion(outputs, labels)
+                    
+                    if reg==True:
+                        regularization_loss = 0
+
+                        for param in model.parameters():
+                            regularization_loss+=torch.sum(abs(param))
+                        
+                        loss = criterion(outputs, labels)+ lambd*regularization_loss
+                    else:
+                        loss = criterion(outputs, labels)
 
                     if phase == 'train':
                         loss.backward()
