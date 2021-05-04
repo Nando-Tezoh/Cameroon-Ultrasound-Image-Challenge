@@ -128,7 +128,7 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
                 if phase== 'val' and epoch_auc> best_auc:
                     best_auc = epoch_auc
                     best_model_wts = copy.deepcopy(model.state_dict())
-                    #torch.save(model.state_dict(),'model.best')
+                    torch.save(model.state_dict(),'model.best')
 
 
         #print()
