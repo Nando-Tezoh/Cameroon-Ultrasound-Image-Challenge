@@ -38,7 +38,7 @@ def create_label(images_path,df,train=True):
 
                    
                     
-def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,auc_bol,reg=False,num_epochs=20):
+def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,auc_bol,num_epochs=20):
     since = time.time()
     auc_list = []
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -78,15 +78,15 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
                     prods, preds = torch.max(outputs, 1)
                     #print('prodd', max_prob.cpu().detach().numpy(),labels.data.cpu().detach().numpy())
                     
-                    if reg==True:
-                        regularization_loss = 0
+#                     if reg==True:
+#                         regularization_loss = 0
 
-                        for param in model.parameters():
-                            regularization_loss+=torch.sum(abs(param))
+#                         for param in model.parameters():
+#                             regularization_loss+=torch.sum(abs(param))
                         
-                        loss = criterion(outputs, labels)+ lambd*regularization_loss
-                    else:
-                        loss = criterion(outputs, labels)
+#                         loss = criterion(outputs, labels)+ lambd*regularization_loss
+#                     else:
+                    loss = criterion(outputs, labels)
 
                     if phase == 'train':
                         loss.backward()
@@ -128,7 +128,7 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
                 if phase== 'val' and epoch_auc> best_auc:
                     best_auc = epoch_auc
                     best_model_wts = copy.deepcopy(model.state_dict())
-                    torch.save(model.state_dict(),'model.best')
+                    torch.save(best_model_wts,'model.best')
 
 
         #print()
@@ -145,8 +145,8 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
         print('Best val AUC : {:4f}'.format(best_auc))
 
     # load best model weights
-    model.load_state_dict(best_model_wts)
-    #model.load_state_dict(torch.load('model.best'))
+    #model.load_state_dict(best_model_wts)
+    model.load_state_dict(torch.load('model.best'))
     return model#, auc_list
 
 ### focal loss
