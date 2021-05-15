@@ -38,13 +38,12 @@ def create_label(images_path,df,train=True):
 
                    
                     
-def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,auc_bol,num_epochs=20,reg=False,lambd=0.1):
+def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,auc_bol,lambd,num_epochs=20,reg=False):
     since = time.time()
     auc_list = []
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
     best_auc = 0.0
-    lambd = 0.1
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
