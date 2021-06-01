@@ -38,7 +38,7 @@ def create_label(images_path,df,train=True):
 
                    
                     
-def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,auc_bol,lambd,num_epochs=20,reg=False):
+def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,auc_bol,lambd,num_epochs=20,reg=False,name_='model.best'):
     since = time.time()
     auc_list = []
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -123,13 +123,13 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
                 if phase == 'val' and epoch_acc > best_acc:
                     best_acc = epoch_acc
                     best_model_wts = copy.deepcopy(model.state_dict())
-                    torch.save(model.state_dict(), 'model.best')
+                    torch.save(model.state_dict(), name_)
             else:
                 
                 if phase== 'val' and epoch_auc> best_auc:
                     best_auc = epoch_auc
                     best_model_wts = copy.deepcopy(model.state_dict())
-                    torch.save(best_model_wts,'model.best')
+                    torch.save(best_model_wts,name_)
 
 
         #print()
@@ -147,7 +147,7 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
 
     # load best model weights
     #model.load_state_dict(best_model_wts)
-    model.load_state_dict(torch.load('model.best'))
+    model.load_state_dict(torch.load(name_))
     return model#, auc_list
 
 ### focal loss
