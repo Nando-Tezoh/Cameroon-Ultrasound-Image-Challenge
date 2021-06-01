@@ -78,7 +78,7 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
                     #print('prodd', max_prob.cpu().detach().numpy(),labels.data.cpu().detach().numpy())
                     
                     if reg==True:
-                        print('L1 regularization mode')
+                        #print('L1 regularization mode')
                         regularization_loss = 0
 
                         for param in model.parameters():
@@ -86,7 +86,7 @@ def train_model(model,criterion,optimizer,scheduler,dataloaders,dataset_sizes,au
                         
                         loss = criterion(outputs, labels)+ lambd*regularization_loss
                     else:
-                        print('no regularization')
+                        #print('no regularization')
                         loss = criterion(outputs, labels)
 
                     if phase == 'train':
